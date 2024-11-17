@@ -1,3 +1,5 @@
+USE ECommerceProject;
+
 INSERT INTO category (categoryID, category_name) VALUES
 (1, 'Electronics'),
 (2, 'Home Appliances'),

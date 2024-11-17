@@ -1,3 +1,7 @@
+CREATE DATABASE ECommerceProject;
+
+USE ECommerceProject;
+
 CREATE TABLE category (
     categoryID 		INT PRIMARY KEY,
     category_name 	VARCHAR(255) NOT NULL
@@ -98,4 +102,3 @@ CREATE TABLE review (
     FOREIGN KEY (customerID) REFERENCES customer(customerID),
     FOREIGN KEY (order_itemsID) REFERENCES order_items(order_itemsID)
 );
-
