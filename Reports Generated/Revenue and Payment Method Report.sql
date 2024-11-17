@@ -8,6 +8,5 @@ SELECT 	o.order_date,
 FROM 	orders o
 JOIN 	payment p ON o.paymentID = p.paymentID
 JOIN 	payment_method pm ON p.paymentmethodID = pm.paymentmethodID
-WHERE 	DATE_FORMAT(o.order_date, '%Y-%m') = '2024-01' OR '2024-02'
 GROUP BY o.order_date, pm.method_name
 ORDER BY o.order_date, pm.method_name;
