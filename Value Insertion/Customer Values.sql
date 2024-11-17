@@ -1,3 +1,5 @@
+USE ECommerceProject;
+
 INSERT INTO customer (customerID, last_name, first_name, phone_number, email, street, city, state, postal_code, country) VALUES
 (202401, 'Santos', 'Juan', '09171234567', 'juan.santos@yipee.com', '123 Rizal St.', 'Quezon City', 'Metro Manila', '1101', 'Philippines'),
 (202402, 'Reyes', 'Maria', '09281234567', 'maria.reyes@geezmail.com', '456 Mabini St.', 'Makati', 'Metro Manila', '1200', 'Philippines'),
