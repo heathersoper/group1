@@ -1,12 +1,12 @@
 USE ECommerceProject;
 
 SELECT c.customer ID,
-	   c.last_name,
+       c.last_name,
        c.first_name,
        c.email,
        c.phone_number,
        YEAR(o.order_date) AS order_year,
-	   MONTH(o.order_date) AS order_month,
+       MONTH(o.order_date) AS order_month,
        COUNT(o.orderID) AS total_purchases,
        SUM(o.order_total) AS amount_spent
 FROM   customers c 
