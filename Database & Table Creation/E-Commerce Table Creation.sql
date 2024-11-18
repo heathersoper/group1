@@ -84,6 +84,7 @@ CREATE TABLE orders (
 );
 
 
+
 CREATE TABLE order_items (
     order_itemsID 	INT PRIMARY KEY,
     orderID 		INT,
