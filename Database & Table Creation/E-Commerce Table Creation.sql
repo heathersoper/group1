@@ -78,7 +78,6 @@ CREATE TABLE orders (
     paymentID 		INT,
     order_date 		DATE NOT NULL,
     productID 		INT,
-    order_status    VARCHAR(50)
     FOREIGN KEY (customerID) REFERENCES customer(customerID),
     FOREIGN KEY (paymentID) REFERENCES payment(paymentID),
     FOREIGN KEY (productID) REFERENCES product(productID)
