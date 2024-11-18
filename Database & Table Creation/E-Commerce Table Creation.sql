@@ -83,6 +83,7 @@ CREATE TABLE orders (
     FOREIGN KEY (productID) REFERENCES product(productID)
 );
 
+
 CREATE TABLE order_items (
     order_itemsID 	INT PRIMARY KEY,
     orderID 		INT,
