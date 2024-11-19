@@ -39,7 +39,7 @@ public class AnimoMarket {
                         break;
                     case 5:
                         System.out.println("View Records selected.");
-                        // Call order status method or class here
+                        ViewRecords.showMenu();
                         break;
                     case 6:
                         System.out.println("View Reports selected.");
