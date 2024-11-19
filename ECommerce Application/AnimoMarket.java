@@ -23,7 +23,7 @@ public class AnimoMarket {
                 switch (choice) {
                     case 1:
                         System.out.println("Order Processing selected.");
-                        // Call order processing method or class here
+                        OrderProcessingTransaction.showMenu();
                         break;
                     case 2:
                         System.out.println("Customer Registration selected.");
