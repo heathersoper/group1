@@ -12,8 +12,8 @@ public class AnimoMarket {
                 System.out.println("2. Customer Registration");
                 System.out.println("3. Payment Transaction");
                 System.out.println("4. Order Status");
-                System.out.println("5. View Data");
-                System.out.println("6. View Reports Generated");
+                System.out.println("5. View Records");
+                System.out.println("6. View Reports");
                 System.out.println("0. Exit");
                 System.out.print("Enter your choice: ");
 
@@ -36,6 +36,14 @@ public class AnimoMarket {
                     case 4:
                         System.out.println("Order Status selected.");
                         // Call order status method or class here
+                        break;
+                    case 5:
+                        System.out.println("View Records selected.");
+                        // Call order status method or class here
+                        break;
+                    case 6:
+                        System.out.println("View Reports selected.");
+                        ViewReports.showMenu();
                         break;
                     case 0:
                         exit = true;
