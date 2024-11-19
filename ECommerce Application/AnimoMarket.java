@@ -27,7 +27,8 @@ public class AnimoMarket {
                         break;
                     case 2:
                         System.out.println("Customer Registration selected.");
-                        // Call customer registration method or class here
+                        CustomerRegistration registration = new CustomerRegistration();
+                        registration.registerCustomer();
                         break;
                     case 3:
                         System.out.println("Payment Transaction selected.");
