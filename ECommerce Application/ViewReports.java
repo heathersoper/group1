@@ -7,17 +7,16 @@ public class ViewReports {
         boolean exitViewReportsMenu = false;
 
         while (!exitViewReportsMenu) {
-
             System.out.println("\nPlease choose a report to view:");
             System.out.println("1. Inventory and Sales Report");
             System.out.println("2. Revenue and Payment Method Report");
             System.out.println("3. Customer Purchase History Report");
             System.out.println("4. Order Status Report");
+            System.out.println("0. Return to Main Menu");
 
             int choice = Input(scanner); // Get user input
 
-            // SQL queries for different reports
-            String query = "";
+            String query = ""; // SQL query placeholder
             switch (choice) {
                 case 1:
                     query = "SELECT p.productID, " +
@@ -32,7 +31,6 @@ public class ViewReports {
                             "GROUP BY p.productID, sale_month " +
                             "ORDER BY sale_month, p.productID;";
                     break;
-
                 case 2:
                     query = "SELECT o.order_date, " +
                             "SUM(o.order_total) AS total_revenue, " +
@@ -45,7 +43,6 @@ public class ViewReports {
                             "GROUP BY o.order_date, pm.method_name " +
                             "ORDER BY o.order_date, pm.method_name;";
                     break;
-
                 case 3:
                     query = "SELECT c.customerID, " +
                             "c.last_name, " +
@@ -62,7 +59,6 @@ public class ViewReports {
                             "GROUP BY c.customerID, YEAR(o.order_date), MONTH(o.order_date) " +
                             "ORDER BY c.customerID, order_year, order_month;";
                     break;
-
                 case 4:
                     query = "SELECT " +
                             "YEAR(order_date) AS year, " +
@@ -75,18 +71,21 @@ public class ViewReports {
                     break;
                 case 0:
                     exitViewReportsMenu = true;
-                    System.out.println("Returning to main menu...");
-                    break;
+                    System.out.println("Returning to Main Menu...");
+                    break; // Skip query execution
                 default:
                     System.out.println("\n[!] Invalid choice. Please choose a valid report.");
             }
 
             try (Connection conn = DatabaseConnection.getConnection()) {
-                // Assuming you have a method to get the database connection
+                if (query.isEmpty()) {
+                    continue; // Skip if no query is specified
+                }
+
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(query);
 
-                // Print headers based on the report type
+                // Print headers and rows based on the report type
                 switch (choice) {
                     case 1:
                         System.out.println("Viewing Inventory and Sales Report...");
@@ -105,8 +104,6 @@ public class ViewReports {
                         printOrderStatusReportHeader();
                         break;
                 }
-
-                // Display the results in table format
                 while (rs.next()) {
                     if (choice == 1) {
                         printInventoryAndSalesReport(rs);
@@ -114,12 +111,12 @@ public class ViewReports {
                         printRevenueAndPaymentMethodReport(rs);
                     } else if (choice == 3) {
                         printCustomerPurchaseHistoryReport(rs);
-                    } else if (choice == 4) {
+                    } else {
                         printOrderStatusReport(rs);
                     }
                 }
             } catch (SQLException e) {
-                System.out.println("\n[!] Error reading input: " + e.getMessage());
+                System.out.println("\n[!] Error executing query: " + e.getMessage());
             }
         }
     }

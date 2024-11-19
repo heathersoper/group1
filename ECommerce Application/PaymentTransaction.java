@@ -45,7 +45,7 @@ public class PaymentTransaction {
                     break;
                 case 0:
                     exitPaymentMenu = true;
-                    System.out.println("Returning to main menu...");
+                    System.out.println("Returning to Main Menu...");
                     break;
                 default:
                     System.out.println("[!] Invalid choice. Please enter a number between 0 and 6.");
