@@ -10,22 +10,22 @@ public class CustomerRegistration {
 
         System.out.println("\n=== Customer Registration ===");
 
-        // Input for first name
-        System.out.print("Enter First Name: ");
-        String firstName = scanner.nextLine().trim();
-        while (firstName.isEmpty()) {
-            System.out.println("[!] First name is mandatory.");
-            System.out.print("Enter First Name: ");
-            firstName = scanner.nextLine().trim();
-        }
-
         // Input for last name
         System.out.print("Enter Last Name: ");
-        String lastName = scanner.nextLine().trim();
-        while (lastName.isEmpty()) {
+        String last_name = scanner.nextLine().trim();
+        while (last_name.isEmpty()) {
             System.out.println("[!] Last name is mandatory.");
             System.out.print("Enter Last Name: ");
-            lastName = scanner.nextLine().trim();
+            last_name = scanner.nextLine().trim();
+        }
+
+        // Input for first name
+        System.out.print("Enter First Name: ");
+        String first_name = scanner.nextLine().trim();
+        while (first_name.isEmpty()) {
+            System.out.println("[!] First name is mandatory.");
+            System.out.print("Enter First Name: ");
+            first_name = scanner.nextLine().trim();
         }
 
         // Input for phone number
@@ -100,11 +100,11 @@ public class CustomerRegistration {
 
         // Insert data into the database
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO customer (first_name, last_name, phone_number, email, street, city, state, postal_code, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO customer (last_name, first_name, phone_number, email, street, city, state, postal_code, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
-            preparedStatement.setString(1, firstName);
-            preparedStatement.setString(2, lastName);
+            preparedStatement.setString(1, last_name);
+            preparedStatement.setString(2, first_name);
             preparedStatement.setString(3, phone_number);
             preparedStatement.setString(4, email);
             preparedStatement.setString(5, street);
