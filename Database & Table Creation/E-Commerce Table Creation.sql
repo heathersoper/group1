@@ -50,6 +50,8 @@ CREATE TABLE customer (
     country 		VARCHAR(50)
 );
 
+ALTER TABLE customer MODIFY customerID INT AUTO_INCREMENT PRIMARY KEY;
+
 CREATE TABLE payment (
     paymentID 		INT PRIMARY KEY,
     paymentmethodID INT,
