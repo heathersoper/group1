@@ -1,5 +1,6 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -10,112 +11,39 @@ public class CustomerRegistration {
 
         System.out.println("\n=== Customer Registration ===");
 
-        // Input for last name
-        System.out.print("Enter Last Name: ");
-        String last_name = scanner.nextLine().trim();
-        while (last_name.isEmpty()) {
-            System.out.println("[!] Last name is mandatory.");
-            System.out.print("Enter Last Name: ");
-            last_name = scanner.nextLine().trim();
-        }
+        // Input collection
+        String lastName = getMandatoryInput(scanner, "Enter Last Name: ");
+        String firstName = getMandatoryInput(scanner, "Enter First Name: ");
+        String phoneNumber = getMandatoryInput(scanner, "Enter Phone Number: ");
+        String email = getMandatoryInput(scanner, "Enter Email: ");
+        String street = getMandatoryInput(scanner, "Enter Address (Street): ");
+        String city = getMandatoryInput(scanner, "Enter City: ");
+        String state = getMandatoryInput(scanner, "Enter State: ");
+        String postalCode = getMandatoryInput(scanner, "Enter Postal Code: ");
+        String country = getMandatoryInput(scanner, "Enter Country: ");
 
-        // Input for first name
-        System.out.print("Enter First Name: ");
-        String first_name = scanner.nextLine().trim();
-        while (first_name.isEmpty()) {
-            System.out.println("[!] First name is mandatory.");
-            System.out.print("Enter First Name: ");
-            first_name = scanner.nextLine().trim();
-        }
-
-        // Input for phone number
-        String phone_number;
-        do {
-            System.out.print("Enter Phone Number (required): ");
-            phone_number = scanner.nextLine().trim();
-            if (phone_number.isEmpty()) {
-                System.out.println("[!] Phone number is mandatory.");
-            }
-        } while (phone_number.isEmpty());
-
-        // Input for email
-        String email;
-        do {
-            System.out.print("Enter Email (required): ");
-            email = scanner.nextLine().trim();
-            if (email.isEmpty()) {
-                System.out.println("[!] Email is mandatory.");
-            }
-        } while (email.isEmpty());
-
-        // Input for street
-        String street;
-        do {
-            System.out.print("Enter Address (required) starting with Street: ");
-            street = scanner.nextLine().trim();
-            if (street.isEmpty()) {
-                System.out.println("[!] Street is mandatory.");
-            }
-        } while (street.isEmpty());
-
-        // Input for city
-        String city;
-        do {
-            System.out.print("Enter City (required): ");
-            city = scanner.nextLine().trim();
-            if (city.isEmpty()) {
-                System.out.println("[!] City is mandatory.");
-            }
-        } while (city.isEmpty());
-
-        // Input for state
-        String state;
-        do {
-            System.out.print("Enter State (required): ");
-            state = scanner.nextLine().trim();
-            if (state.isEmpty()) {
-                System.out.println("[!] State is mandatory.");
-            }
-        } while (state.isEmpty());
-
-        // Input for postal_code
-        String postal_code;
-        do {
-            System.out.print("Enter Postal Code (required): ");
-            postal_code = scanner.nextLine().trim();
-            if (postal_code.isEmpty()) {
-                System.out.println("[!] Postal Code is mandatory.");
-            }
-        } while (postal_code.isEmpty());
-
-        // Input for country
-        String country;
-        do {
-            System.out.print("Enter Country (required): ");
-            country = scanner.nextLine().trim();
-            if (country.isEmpty()) {
-                System.out.println("[!] Country is mandatory.");
-            }
-        } while (country.isEmpty());
-
-        // Insert data into the database
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO customer (last_name, first_name, phone_number, email, street, city, state, postal_code, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // Generate next customerID
+            int customerID = getNextCustomerID(connection);
+
+            // Insert data into the database
+            String query = "INSERT INTO customer (customerID, last_name, first_name, phone_number, email, street, city, state, postal_code, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
-            preparedStatement.setString(1, last_name);
-            preparedStatement.setString(2, first_name);
-            preparedStatement.setString(3, phone_number);
-            preparedStatement.setString(4, email);
-            preparedStatement.setString(5, street);
-            preparedStatement.setString(6, city);
-            preparedStatement.setString(7, state);
-            preparedStatement.setString(8, postal_code);
-            preparedStatement.setString(9, country);
+            preparedStatement.setInt(1, customerID);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setString(3, firstName);
+            preparedStatement.setString(4, phoneNumber);
+            preparedStatement.setString(5, email);
+            preparedStatement.setString(6, street);
+            preparedStatement.setString(7, city);
+            preparedStatement.setString(8, state);
+            preparedStatement.setString(9, postalCode);
+            preparedStatement.setString(10, country);
 
             int rowsInserted = preparedStatement.executeUpdate();
             if (rowsInserted > 0) {
-                System.out.println("[!] Customer registered successfully.");
+                System.out.println("[!] Customer registered successfully with ID: " + customerID);
             } else {
                 System.out.println("[!] Registration failed. Please try again.");
             }
@@ -124,9 +52,34 @@ public class CustomerRegistration {
         }
     }
 
+    private int getNextCustomerID(Connection connection) throws SQLException {
+        String query = "SELECT MAX(customerID) FROM customer";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            if (resultSet.next()) {
+                int maxID = resultSet.getInt(1); // Get the current maximum customerID
+                return maxID + 1; // Increment for the next ID
+            } else {
+                return 1; // Start from 1 if no records exist
+            }
+        }
+    }
+
+    private String getMandatoryInput(Scanner scanner, String prompt) {
+        String input;
+        do {
+            System.out.print(prompt);
+            input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("[!] This field is mandatory.");
+            }
+        } while (input.isEmpty());
+        return input;
+    }
+
     public static void main(String[] args) {
         CustomerRegistration customerRegistration = new CustomerRegistration();
         customerRegistration.registerCustomer();
     }
 }
-
