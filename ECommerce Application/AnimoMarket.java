@@ -36,7 +36,7 @@ public class AnimoMarket {
                         break;
                     case 4:
                         System.out.println("Order Status selected.");
-                        // Call order status method or class here
+                        OrderStatusTransaction.showMenu();
                         break;
                     case 5:
                         System.out.println("View Records selected.");
