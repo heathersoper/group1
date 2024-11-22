@@ -82,7 +82,7 @@ public class OrderStatusTransaction {
             int orderID = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
-            System.out.print("Enter New Order Status (e.g., Pending, Cancelled, Completed): ");
+            System.out.print("Enter New Order Status (Pending, Cancelled, Completed): ");
             String newStatus = scanner.nextLine();
 
             String query = "UPDATE orders SET order_status = ?, order_date = NOW() WHERE orderID = ?";

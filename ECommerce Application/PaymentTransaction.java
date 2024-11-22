@@ -11,10 +11,9 @@ public class PaymentTransaction {
             System.out.println("1. Check customer’s details for payment eligibility");
             System.out.println("2. Read invoice record");
             System.out.println("3. Create a payment record for an order");
-            System.out.println("4. Update customer’s payment status");
-            System.out.println("5. Create a receipt for the payment transaction");
-            System.out.println("6. Check eligibility for a discount");
-            System.out.println("0. Return to main menu");
+            System.out.println("4. Create a receipt for the payment transaction");
+            System.out.println("5. Check eligibility for a discount");
+            System.out.println("0. Return to Main Menu");
 
             int paymentChoice = Input(scanner); // Get validated input
 
@@ -32,14 +31,10 @@ public class PaymentTransaction {
                     PaymentTransactionMenu.createPaymentRecord(scanner);
                     break;
                 case 4:
-                    System.out.println("Updating payment status...");
-                    PaymentTransactionMenu.updatePaymentStatus(scanner);
-                    break;
-                case 5:
                     System.out.println("Creating a receipt...");
                     PaymentTransactionMenu.createReceipt(scanner);
                     break;
-                case 6:
+                case 5:
                     System.out.println("Checking discount eligibility...");
                     PaymentTransactionMenu.checkDiscountEligibility(scanner);
                     break;
@@ -156,54 +151,6 @@ class PaymentTransactionMenu {
         }
         scanner.nextLine();
     }
-
-    public static void updatePaymentStatus(Scanner scanner) {
-        try (Connection con = DatabaseConnection.getConnection()) {
-            System.out.print("\nEnter order ID: ");
-            int orderID = scanner.nextInt();
-
-            // Prompt user for status choice
-            System.out.println("\nSelect the new payment status:");
-            System.out.println("1. Completed");
-            System.out.println("2. Pending");
-            System.out.println("3. Cancelled");
-            System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-
-            String newStatus;
-            switch (choice) {
-                case 1:
-                    newStatus = "Completed";
-                    break;
-                case 2:
-                    newStatus = "Pending";
-                    break;
-                case 3:
-                    newStatus = "Cancelled";
-                    break;
-                default:
-                    System.out.println("\n[!] Invalid choice. No changes made.");
-                    return;
-            }
-
-            // Update the order status in the database
-            String query = "UPDATE orders SET order_status = ? WHERE orderID = ?";
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setString(1, newStatus);
-            stmt.setInt(2, orderID);
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("\n[!] Order payment status updated to '" + newStatus + "'.");
-            } else {
-                System.out.println("\n[!] Failed to update payment status. Order ID may not exist.");
-            }
-        } catch (SQLException e) {
-            System.err.println("\n[!] Error while updating payment status: " + e.getMessage());
-        }
-    }
-
 
     public static void createReceipt(Scanner scanner) {
         try (Connection con = DatabaseConnection.getConnection()) {

@@ -8,14 +8,13 @@ public class OrderProcessingTransaction {
         boolean exitOrderProcessingMenu = false;
 
         while (!exitOrderProcessingMenu) {
-            System.out.println("\n=== Order Processing Menu ===");
+            System.out.println("\n+*+ Order Processing Menu +*+");
             System.out.println("1. Check Customer Eligibility");
             System.out.println("2. Check Product Availability");
             System.out.println("3. Create New Order Record");
             System.out.println("4. Update Inventory");
             System.out.println("5. Create Transaction Record");
-            System.out.println("0. Exit");
-            System.out.print("Enter your choice: ");
+            System.out.println("0. Return To Main Menu");
 
             int orderChoice = Input(scanner); // Get validated input
 
@@ -98,6 +97,7 @@ class OrderTransactionMenu {
         } catch (SQLException e) {
             System.err.println("\n[!] Error while checking customer eligibility: " + e.getMessage());
         }
+        scanner.nextLine();
     }
 
     // Read product availability in inventory
@@ -119,6 +119,7 @@ class OrderTransactionMenu {
         } catch (SQLException e) {
             System.err.println("\n[!] Error while reading inventory: " + e.getMessage());
         }
+        scanner.nextLine();
     }
 
     // Create a new order record
@@ -151,6 +152,7 @@ class OrderTransactionMenu {
         } catch (SQLException e) {
             System.err.println("\n[!] Error while creating order: " + e.getMessage());
         }
+        scanner.nextLine();
     }
 
     // Update inventory after an order
@@ -176,6 +178,7 @@ class OrderTransactionMenu {
         } catch (SQLException e) {
             System.err.println("\n[!] Error while updating inventory: " + e.getMessage());
         }
+        scanner.nextLine();
     }
 
     // Create a transaction record after a successful order
@@ -215,6 +218,7 @@ class OrderTransactionMenu {
         } catch (SQLException e) {
             System.err.println("\n[!] Error while creating transaction record: " + e.getMessage());
         }
+        scanner.nextLine();
     }
 }
 

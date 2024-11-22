@@ -9,7 +9,7 @@ public class CustomerRegistration {
     public void registerCustomer() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("\n=== Customer Registration ===");
+        System.out.println("\n+*+ Customer Registration +*+");
 
         // Input collection
         String lastName = getMandatoryInput(scanner, "Enter Last Name: ");
