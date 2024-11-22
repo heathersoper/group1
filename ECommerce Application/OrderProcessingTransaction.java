@@ -127,17 +127,17 @@ class OrderTransactionMenu {
         try (Connection con = DatabaseConnection.getConnection()) {
             System.out.print("\nEnter customer ID: ");
             int customerID = scanner.nextInt();
-            System.out.print("Enter payment method ID: ");
-            int paymentMethodID = scanner.nextInt();
+            System.out.print("Enter product ID: ");
+            int productID = scanner.nextInt();
             System.out.print("Enter total order amount: ");
             double orderTotal = scanner.nextDouble();
 
             // Insert the order into the orders table
-            String query = "INSERT INTO orders (order_total, customerID, paymentID, order_date, order_status) VALUES (?, ?, ?, NOW(), 'Pending')";
+            String query = "INSERT INTO orders (order_total, customerID, productID, order_date, order_status) VALUES (?, ?, ?, NOW(), 'Pending')";
             PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setDouble(1, orderTotal);
             stmt.setInt(2, customerID);
-            stmt.setInt(3, paymentMethodID);
+            stmt.setInt(3, productID);
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {

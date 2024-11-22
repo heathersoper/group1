@@ -47,7 +47,7 @@ DROP TABLE IF EXISTS `customer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customer` (
-  `customerID` int NOT NULL,
+  `customerID` int NOT NULL AUTO_INCREMENT,
   `last_name` varchar(100) NOT NULL,
   `first_name` varchar(100) NOT NULL,
   `phone_number` varchar(20) DEFAULT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE `customer` (
   `country` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`customerID`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=202451 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,7 +80,7 @@ DROP TABLE IF EXISTS `discount`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `discount` (
-  `discountID` int NOT NULL,
+  `discountID` int NOT NULL AUTO_INCREMENT,
   `discount_name` varchar(100) NOT NULL,
   `description` text,
   `minim_spend` decimal(10,2) DEFAULT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE `discount` (
   `active` tinyint(1) DEFAULT NULL,
   `paymentID` int DEFAULT NULL,
   PRIMARY KEY (`discountID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10011 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,7 +97,7 @@ CREATE TABLE `discount` (
 
 LOCK TABLES `discount` WRITE;
 /*!40000 ALTER TABLE `discount` DISABLE KEYS */;
-INSERT INTO `discount` VALUES (10001,'Holiday Sale','10% off on orders above 1000',1000.00,10.00,1,1001),(10002,'Welcome Discount','5% off for new users',500.00,5.00,1,1002),(10003,'Loyalty Discount','15% off for returning customers',2000.00,15.00,1,1004),(10004,'Flash Sale','20% off limited-time offer',500.00,20.00,0,1006),(10005,'Clearance Sale','30% off on clearance items',100.00,30.00,1,1010),(10006,'Birthday Bonus','Special 25% discount for birthdays',300.00,25.00,1,NULL),(10007,'Black Friday Deal','50% off sitewide',5000.00,50.00,1,1007),(10008,'Cyber Monday','40% discount on electronics',5000.00,40.00,0,1008),(10009,'Student Discount','10% off with student ID',200.00,10.00,1,1009),(10010,'End of Season','25% off clearance items',1000.00,25.00,1,NULL);
+INSERT INTO `discount` VALUES (10001,'Holiday Sale','10% off on orders above 1000',1000.00,10.00,1,1001),(10002,'Welcome Discount','5% off for new users',500.00,5.00,1,1002),(10003,'Loyalty Discount','15% off for returning customers',2000.00,15.00,1,1004),(10004,'Flash Sale','20% off limited-time offer',500.00,20.00,0,1007),(10005,'Clearance Sale','30% off on clearance items',100.00,30.00,1,1010),(10006,'Birthday Bonus','Special 25% discount for birthdays',300.00,25.00,1,1015),(10007,'Anniversary Deal','50% off sitewide',5000.00,50.00,1,1007),(10008,'Cyber Monday','40% discount on electronics',5000.00,40.00,0,1018),(10009,'Student Discount','10% off with student ID',200.00,10.00,1,1009),(10010,'Mystery Bonus','25% off random items',1000.00,25.00,1,1012);
 /*!40000 ALTER TABLE `discount` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -109,7 +109,7 @@ DROP TABLE IF EXISTS `order_items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order_items` (
-  `order_itemsID` int NOT NULL,
+  `order_itemsID` int NOT NULL AUTO_INCREMENT,
   `orderID` int DEFAULT NULL,
   `productID` int DEFAULT NULL,
   `order_quantity` int NOT NULL,
@@ -119,7 +119,7 @@ CREATE TABLE `order_items` (
   KEY `productID` (`productID`),
   CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`orderID`) REFERENCES `orders` (`orderID`),
   CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`productID`) REFERENCES `product` (`productID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=400021 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -128,7 +128,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
-INSERT INTO `order_items` VALUES (400001,300001,750936,3,7497.00),(400002,300002,705898,1,29999.00),(400003,300003,881948,2,3498.00),(400004,300004,309602,2,70000.00),(400005,300005,203495,1,7500.00),(400006,300006,263793,6,9000.00),(400007,300007,104510,1,20000.00),(400008,300008,265503,1,15000.00),(400009,300009,873939,3,1500.00),(400010,300010,693868,3,1050.00),(400011,300011,349933,1,1500.00),(400012,300012,772199,5,3000.00),(400013,300013,105655,2,300.00),(400014,300014,956988,2,2000.00),(400015,300015,567916,3,2400.00),(400016,300016,468303,3,4500.00),(400017,300017,327185,3,1800.00),(400018,300018,100636,3,2400.00),(400019,300019,931087,3,1500.00),(400020,300020,705898,1,75000.00);
+INSERT INTO `order_items` VALUES (400001,300001,750936,3,74997.00),(400002,300002,705898,1,49999.00),(400003,300003,881948,2,5998.00),(400004,300004,309602,2,70000.00),(400005,300005,203495,1,6000.00),(400006,300006,263793,6,9000.00),(400007,300007,104510,1,20000.00),(400008,300008,265503,1,15000.00),(400009,300009,873939,3,1500.00),(400010,300010,693868,3,1050.00),(400011,300011,349933,1,1500.00),(400012,300012,772199,5,3000.00),(400013,300013,105655,2,300.00),(400014,300014,956988,2,2000.00),(400015,300015,567916,3,2400.00),(400016,300016,468303,3,4500.00),(400017,300017,327185,3,1800.00),(400018,300018,100636,3,2400.00),(400019,300019,931087,3,1500.00),(400020,300020,705898,1,49999.00);
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -140,13 +140,13 @@ DROP TABLE IF EXISTS `orders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `orders` (
-  `orderID` int NOT NULL,
+  `orderID` int NOT NULL AUTO_INCREMENT,
   `order_total` decimal(10,2) NOT NULL,
   `customerID` int DEFAULT NULL,
   `paymentID` int DEFAULT NULL,
   `order_date` date NOT NULL,
   `productID` int DEFAULT NULL,
-  `order_status` varchar(50) DEFAULT NULL,
+  `order_status` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`orderID`),
   KEY `customerID` (`customerID`),
   KEY `paymentID` (`paymentID`),
@@ -154,7 +154,7 @@ CREATE TABLE `orders` (
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customerID`) REFERENCES `customer` (`customerID`),
   CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`paymentID`) REFERENCES `payment` (`paymentID`),
   CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`productID`) REFERENCES `product` (`productID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=300024 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,7 +163,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (300001,7497.00,202401,1001,'2024-01-10',750936,'Completed'),(300002,29999.00,202402,1002,'2024-01-11',705898,'Completed'),(300003,3498.00,202403,1003,'2024-01-12',881948,'Completed'),(300004,70000.00,202404,1004,'2024-01-15',309602,'Completed'),(300005,7500.00,202405,1005,'2024-01-16',203495,'Completed'),(300006,9000.00,202406,1006,'2024-01-18',263793,'Completed'),(300007,20000.00,202407,1007,'2024-01-20',104510,'Completed'),(300008,15000.00,202408,1008,'2024-01-21',265503,'Completed'),(300009,1500.00,202409,1009,'2024-01-25',873939,'Completed'),(300010,1050.00,202410,1010,'2024-01-26',693868,'Completed'),(300011,1500.00,202411,1011,'2024-01-28',349933,'Completed'),(300012,3000.00,202412,1012,'2024-01-30',772199,'Completed'),(300013,300.00,202413,1013,'2024-02-01',105655,'Completed'),(300014,2000.00,202414,1014,'2024-02-03',956988,'Completed'),(300015,2400.00,202415,1015,'2024-02-05',567916,'Completed'),(300016,4500.00,202416,1016,'2024-02-06',468303,'Completed'),(300017,1800.00,202417,1017,'2024-02-08',327185,'Completed'),(300018,2400.00,202418,1018,'2024-02-10',100636,'Completed'),(300019,1500.00,202419,1019,'2024-02-12',931087,'Completed'),(300020,75000.00,202420,1020,'2024-02-15',705898,'Completed');
+INSERT INTO `orders` VALUES (300001,74997.00,202401,1021,'2024-01-10',750936,'Completed'),(300002,49999.00,202402,1002,'2024-01-11',705898,'Completed'),(300003,5998.00,202403,1003,'2024-01-12',881948,'Completed'),(300004,70000.00,202404,1004,'2024-01-15',309602,'Completed'),(300005,6000.00,202405,1005,'2024-01-16',203495,'Completed'),(300006,9000.00,202406,1006,'2024-01-18',263793,'Completed'),(300007,20000.00,202407,1007,'2024-01-20',104510,'Completed'),(300008,15000.00,202408,1008,'2024-01-21',265503,'Completed'),(300009,1500.00,202409,1009,'2024-01-25',873939,'Completed'),(300010,1050.00,202410,1010,'2024-01-26',693868,'Completed'),(300011,1500.00,202411,1011,'2024-01-28',349933,'Completed'),(300012,3000.00,202412,1012,'2024-01-30',772199,'Completed'),(300013,300.00,202413,1013,'2024-02-01',105655,'Completed'),(300014,2000.00,202414,1014,'2024-02-03',956988,'Completed'),(300015,2400.00,202415,1015,'2024-02-05',567916,'Completed'),(300016,4500.00,202416,1016,'2024-02-06',468303,'Completed'),(300017,1800.00,202417,1017,'2024-02-08',327185,'Completed'),(300018,2400.00,202418,1018,'2024-02-10',100636,'Completed'),(300019,1500.00,202419,1019,'2024-02-12',931087,'Completed'),(300020,49999.00,202420,1020,'2024-02-15',705898,'Completed'),(300022,2500.00,202450,NULL,'2024-11-23',NULL,'Pending'),(300023,24999.00,202449,1022,'2024-11-23',750936,'Pending');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -175,7 +175,7 @@ DROP TABLE IF EXISTS `payment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `payment` (
-  `paymentID` int NOT NULL,
+  `paymentID` int NOT NULL AUTO_INCREMENT,
   `paymentmethodID` int DEFAULT NULL,
   `payment_date` date NOT NULL,
   `amount` decimal(10,2) NOT NULL,
@@ -185,7 +185,7 @@ CREATE TABLE `payment` (
   KEY `discountID` (`discountID`),
   CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`paymentmethodID`) REFERENCES `payment_method` (`paymentmethodID`),
   CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`discountID`) REFERENCES `discount` (`discountID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1023 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -194,7 +194,7 @@ CREATE TABLE `payment` (
 
 LOCK TABLES `payment` WRITE;
 /*!40000 ALTER TABLE `payment` DISABLE KEYS */;
-INSERT INTO `payment` VALUES (1001,1,'2024-11-01',2500.00,10001),(1002,2,'2024-11-02',1200.00,10002),(1003,3,'2024-11-03',500.00,NULL),(1004,4,'2024-11-04',3000.00,10003),(1005,5,'2024-11-05',800.00,NULL),(1006,6,'2024-11-06',1500.00,10004),(1007,1,'2024-11-07',10000.00,10007),(1008,5,'2024-11-08',2000.00,10008),(1009,4,'2024-11-09',250.00,10009),(1010,3,'2024-11-10',5000.00,10005),(1011,6,'2024-11-11',8000.00,NULL),(1012,1,'2024-11-12',4500.00,NULL),(1013,2,'2024-11-13',1200.00,10002),(1014,4,'2024-11-14',1500.00,NULL),(1015,5,'2024-11-15',3000.00,10006),(1016,3,'2024-11-16',250.00,NULL),(1017,2,'2024-11-17',7000.00,10007),(1018,4,'2024-11-18',800.00,NULL),(1019,5,'2024-11-19',6000.00,10008),(1020,1,'2024-11-20',1000.00,NULL);
+INSERT INTO `payment` VALUES (1001,1,'2024-11-01',67497.30,10001),(1002,2,'2024-11-02',47499.05,10002),(1003,3,'2024-11-03',5998.00,NULL),(1004,4,'2024-11-04',59500.00,10003),(1005,5,'2024-11-05',6000.00,NULL),(1006,6,'2024-11-06',9000.00,NULL),(1007,1,'2024-11-07',10000.00,10007),(1008,5,'2024-11-08',15000.00,NULL),(1009,4,'2024-11-09',1350.00,10009),(1010,3,'2024-11-10',735.00,10005),(1011,6,'2024-11-11',1500.00,NULL),(1012,1,'2024-11-12',2250.00,10010),(1013,2,'2024-11-13',300.00,NULL),(1014,4,'2024-11-14',2000.00,NULL),(1015,5,'2024-11-15',1800.00,10006),(1016,3,'2024-11-16',4500.00,NULL),(1017,2,'2024-11-17',1800.00,NULL),(1018,4,'2024-11-18',1440.00,10008),(1019,5,'2024-11-19',1500.00,NULL),(1020,1,'2024-11-20',39999.20,10004),(1021,1,'2024-11-23',2500.00,NULL),(1022,1,'2024-11-23',24999.00,NULL);
 /*!40000 ALTER TABLE `payment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -260,7 +260,7 @@ DROP TABLE IF EXISTS `purchase_order`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `purchase_order` (
-  `POID` int NOT NULL,
+  `POID` int NOT NULL AUTO_INCREMENT,
   `productID` int DEFAULT NULL,
   `vendorID` int DEFAULT NULL,
   `total` decimal(10,2) NOT NULL,
@@ -271,7 +271,7 @@ CREATE TABLE `purchase_order` (
   KEY `vendorID` (`vendorID`),
   CONSTRAINT `purchase_order_ibfk_1` FOREIGN KEY (`productID`) REFERENCES `product` (`productID`),
   CONSTRAINT `purchase_order_ibfk_2` FOREIGN KEY (`vendorID`) REFERENCES `vendor` (`vendorID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -292,7 +292,7 @@ DROP TABLE IF EXISTS `review`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `review` (
-  `reviewID` int NOT NULL,
+  `reviewID` int NOT NULL AUTO_INCREMENT,
   `customerID` int DEFAULT NULL,
   `order_itemsID` int DEFAULT NULL,
   `review_date` date NOT NULL,
@@ -303,7 +303,7 @@ CREATE TABLE `review` (
   CONSTRAINT `review_ibfk_1` FOREIGN KEY (`customerID`) REFERENCES `customer` (`customerID`),
   CONSTRAINT `review_ibfk_2` FOREIGN KEY (`order_itemsID`) REFERENCES `order_items` (`order_itemsID`),
   CONSTRAINT `review_chk_1` CHECK ((`rating` between 1 and 5))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=500021 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -349,4 +349,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-18 11:52:37
+-- Dump completed on 2024-11-23  0:56:38

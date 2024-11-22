@@ -28,7 +28,7 @@ CREATE TABLE product (
 );
 
 CREATE TABLE discount (
-    discountID 		INT PRIMARY KEY,
+    discountID 		INT AUTO_INCREMENT PRIMARY KEY,
     discount_name 	VARCHAR(100) NOT NULL,
     description 	TEXT,
     minim_spend 	DECIMAL(10, 2),
@@ -51,7 +51,7 @@ CREATE TABLE customer (
 );
 
 CREATE TABLE payment (
-    paymentID 		INT PRIMARY KEY,
+    paymentID 		INT AUTO_INCREMENT PRIMARY KEY,
     paymentmethodID INT,
     payment_date 	DATE NOT NULL,
     amount 			DECIMAL(10, 2) NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE payment (
 );
 
 CREATE TABLE purchase_order (
-    POID 			INT PRIMARY KEY,
+    POID 			INT AUTO_INCREMENT PRIMARY KEY,
     productID 		INT,
     vendorID 		INT,
     total 			DECIMAL(10, 2) NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE purchase_order (
 );
 
 CREATE TABLE orders (
-    orderID 		INT PRIMARY KEY,
+    orderID 		INT AUTO_INCREMENT PRIMARY KEY,
     order_total 	DECIMAL(10, 2) NOT NULL,
     customerID 		INT,
     paymentID 		INT,
@@ -85,7 +85,7 @@ CREATE TABLE orders (
 );
 
 CREATE TABLE order_items (
-    order_itemsID 	INT PRIMARY KEY,
+    order_itemsID 	INT AUTO_INCREMENT PRIMARY KEY,
     orderID 		INT,
     productID 		INT,
     order_quantity 	INT NOT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE order_items (
 );
 
 CREATE TABLE review (
-    reviewID 		INT PRIMARY KEY,
+    reviewID 		INT AUTO_INCREMENT PRIMARY KEY,
     customerID 		INT,
     order_itemsID 	INT,
     review_date 	DATE NOT NULL,

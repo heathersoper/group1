@@ -126,23 +126,39 @@ class PaymentTransactionMenu {
 
     public static void createPaymentRecord(Scanner scanner) {
         try (Connection con = DatabaseConnection.getConnection()) {
-            System.out.print("\nEnter payment ID: ");
-            int orderID = scanner.nextInt();
+            System.out.print("\nEnter order ID to link payment: ");
+            int orderID = scanner.nextInt(); // Order to associate the payment with
             System.out.print("Enter payment method ID: ");
             int paymentMethodID = scanner.nextInt();
             System.out.print("Enter payment amount: ");
             double paymentAmount = scanner.nextDouble();
 
-            String query = "INSERT INTO payment (paymentID, paymentmethodID, payment_date, amount) " +
-                    "VALUES (?, ?, NOW(), ?)";
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setInt(1, orderID); // Assuming orderID as paymentID for simplicity
-            stmt.setInt(2, paymentMethodID);
-            stmt.setDouble(3, paymentAmount);
-            int rowsAffected = stmt.executeUpdate();
+            // Step 1: Insert into the payment table
+            String paymentQuery = "INSERT INTO payment (paymentmethodID, payment_date, amount) VALUES (?, NOW(), ?)";
+            PreparedStatement paymentStmt = con.prepareStatement(paymentQuery, Statement.RETURN_GENERATED_KEYS);
+            paymentStmt.setInt(1, paymentMethodID);
+            paymentStmt.setDouble(2, paymentAmount);
 
+            int rowsAffected = paymentStmt.executeUpdate();
             if (rowsAffected > 0) {
-                System.out.println("\nPayment record created successfully.");
+                ResultSet generatedKeys = paymentStmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int paymentID = generatedKeys.getInt(1); // Retrieve the generated paymentID
+                    System.out.println("\nPayment record created successfully with Payment ID: " + paymentID);
+
+                    // Step 2: Update the orders table to link the paymentID
+                    String updateOrderQuery = "UPDATE orders SET paymentID = ? WHERE orderID = ?";
+                    PreparedStatement updateOrderStmt = con.prepareStatement(updateOrderQuery);
+                    updateOrderStmt.setInt(1, paymentID);
+                    updateOrderStmt.setInt(2, orderID);
+
+                    int updateRows = updateOrderStmt.executeUpdate();
+                    if (updateRows > 0) {
+                        System.out.println("\nOrder updated successfully to reference the new Payment ID.");
+                    } else {
+                        System.out.println("\nFailed to update the order with the Payment ID. Verify the order ID.");
+                    }
+                }
             } else {
                 System.out.println("\nFailed to create payment record.");
             }
@@ -151,6 +167,7 @@ class PaymentTransactionMenu {
         }
         scanner.nextLine();
     }
+
 
     public static void createReceipt(Scanner scanner) {
         try (Connection con = DatabaseConnection.getConnection()) {
