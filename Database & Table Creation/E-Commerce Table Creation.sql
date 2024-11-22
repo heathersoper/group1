@@ -38,7 +38,7 @@ CREATE TABLE discount (
 );
 
 CREATE TABLE customer (
-    customerID 		INT PRIMARY KEY,
+    customerID 		INT AUTO_INCREMENT PRIMARY KEY,
     last_name 		VARCHAR(100) NOT NULL,
     first_name 		VARCHAR(100) NOT NULL,
     phone_number 	VARCHAR(20),
@@ -49,8 +49,6 @@ CREATE TABLE customer (
     postal_code 	VARCHAR(20),
     country 		VARCHAR(50)
 );
-
-ALTER TABLE customer MODIFY customerID INT AUTO_INCREMENT PRIMARY KEY;
 
 CREATE TABLE payment (
     paymentID 		INT PRIMARY KEY,
@@ -80,12 +78,11 @@ CREATE TABLE orders (
     paymentID 		INT,
     order_date 		DATE NOT NULL,
     productID 		INT,
+    order_status	VARCHAR(45),
     FOREIGN KEY (customerID) REFERENCES customer(customerID),
     FOREIGN KEY (paymentID) REFERENCES payment(paymentID),
     FOREIGN KEY (productID) REFERENCES product(productID)
 );
-
-
 
 CREATE TABLE order_items (
     order_itemsID 	INT PRIMARY KEY,
