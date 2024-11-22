@@ -77,9 +77,4 @@ public class CustomerRegistration {
         } while (input.isEmpty());
         return input;
     }
-
-    public static void main(String[] args) {
-        CustomerRegistration customerRegistration = new CustomerRegistration();
-        customerRegistration.registerCustomer();
-    }
 }
