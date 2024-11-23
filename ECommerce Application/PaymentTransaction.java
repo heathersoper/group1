@@ -204,31 +204,40 @@ class PaymentTransactionMenu {
             System.out.print("\nEnter payment ID: ");
             int paymentID = scanner.nextInt();
 
-            // Check for discount eligibility
-            String eligibilityQuery = "SELECT d.discountID, d.discount_name, d.minim_spend, d.discount_percent " +
-                    "FROM discount d " +
-                    "WHERE d.active = TRUE AND d.paymentID IS NULL " +
-                    "AND EXISTS (SELECT 1 FROM payment p WHERE p.paymentID = ? AND p.amount >= d.minim_spend)";
-            PreparedStatement eligibilityStmt = con.prepareStatement(eligibilityQuery);
-            eligibilityStmt.setInt(1, paymentID);
+            // Check if the payment already has a discount
+            String assignedDiscountQuery =
+                    "SELECT d.discountID, d.discount_name, d.discount_percent " +
+                            "FROM discount d " +
+                            "JOIN payment p ON p.discountID = d.discountID " +
+                            "WHERE p.paymentID = ?";
+            PreparedStatement assignedDiscountStmt = con.prepareStatement(assignedDiscountQuery);
+            assignedDiscountStmt.setInt(1, paymentID);
+            ResultSet assignedDiscountRs = assignedDiscountStmt.executeQuery();
 
-            ResultSet rs = eligibilityStmt.executeQuery();
+            if (assignedDiscountRs.next()) {
+                // Display the discount already assigned
+                System.out.print("\nThis payment already has a discount assigned:\n");
+                System.out.printf("Discount Name: %s%n", assignedDiscountRs.getString("discount_name"));
+                System.out.printf("Discount Percent: %.2f%%%n", assignedDiscountRs.getDouble("discount_percent"));
+            } else {
+                // Check for discount eligibility
+                String eligibilityQuery =
+                        "SELECT d.discountID, d.discount_name, d.minim_spend, d.discount_percent " +
+                                "FROM discount d " +
+                                "WHERE d.active = TRUE AND d.paymentID IS NULL " +
+                                "AND EXISTS (SELECT 1 FROM payment p WHERE p.paymentID = ? AND p.amount >= d.minim_spend)";
+                PreparedStatement eligibilityStmt = con.prepareStatement(eligibilityQuery);
+                eligibilityStmt.setInt(1, paymentID);
+                ResultSet eligibilityRs = eligibilityStmt.executeQuery();
 
-            if (rs.next()) {
-                int discountID = rs.getInt("discountID");
-                String discountName = rs.getString("discount_name");
-                double discountPercent = rs.getDouble("discount_percent");
+                if (eligibilityRs.next()) {
+                    int discountID = eligibilityRs.getInt("discountID");
+                    String discountName = eligibilityRs.getString("discount_name");
+                    double discountPercent = eligibilityRs.getDouble("discount_percent");
 
-                System.out.printf("\nDiscount Eligible: %s%n", discountName);
-                System.out.printf("Discount Percent: %.2f%%%n", discountPercent);
+                    System.out.printf("\nDiscount Eligible: %s%n", discountName);
+                    System.out.printf("Discount Percent: %.2f%%%n", discountPercent);
 
-                // Check if the payment already has a discount
-                String paymentCheckQuery = "SELECT discountID FROM payment WHERE paymentID = ?";
-                PreparedStatement paymentCheckStmt = con.prepareStatement(paymentCheckQuery);
-                paymentCheckStmt.setInt(1, paymentID);
-                ResultSet paymentRs = paymentCheckStmt.executeQuery();
-
-                if (paymentRs.next() && paymentRs.getInt("discountID") == 0) {
                     // Assign the paymentID to the discount in the discount table
                     String updateDiscountQuery = "UPDATE discount SET paymentID = ? WHERE discountID = ?";
                     PreparedStatement updateDiscountStmt = con.prepareStatement(updateDiscountQuery);
@@ -249,10 +258,8 @@ class PaymentTransactionMenu {
                         System.out.println("\n[!] Failed to apply the discount to the payment.");
                     }
                 } else {
-                    System.out.println("\nThis payment already has a discount or is not eligible.");
+                    System.out.println("\nNo eligible discounts available or minimum spend not met.");
                 }
-            } else {
-                System.out.println("\nNo eligible discounts available or minimum spend not met.");
             }
         } catch (SQLException e) {
             System.err.println("\n[!] Error while checking and applying discount: " + e.getMessage());
