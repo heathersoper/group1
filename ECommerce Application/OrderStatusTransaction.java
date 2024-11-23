@@ -10,7 +10,6 @@ public class OrderStatusTransaction {
             System.out.println("\n+*+ Order Status Transaction Menu +*+");
             System.out.println("1. View Current Order Status");
             System.out.println("2. Update Order Status");
-            System.out.println("3. Update Inventory");
             System.out.println("0. Return to Main Menu");
 
             int choice = Input(scanner);
@@ -24,16 +23,12 @@ public class OrderStatusTransaction {
                     System.out.println("Updating order status...");
                     updateOrderStatus(scanner);
                     break;
-                case 3:
-                    System.out.println("Updating inventory...");
-                    updateInventory(scanner);
-                    break;
                 case 0:
                     exitMenu = true;
                     System.out.println("Returning to Main Menu...");
                     break;
                 default:
-                    System.out.println("[!] Invalid choice. Enter a number between 0 and 3.");
+                    System.out.println("[!] Invalid choice. Enter a number between 0 and 2.");
             }
         }
     }
@@ -99,49 +94,5 @@ public class OrderStatusTransaction {
         } catch (SQLException e) {
             System.err.println("[!] Error while updating order status: " + e.getMessage());
         }
-    }
-
-    public static void updateInventory(Scanner scanner) {
-        try (Connection con = DatabaseConnection.getConnection()) {
-            System.out.print("\nEnter Product ID: ");
-            int productID = scanner.nextInt();
-
-            System.out.print("Enter Quantity to Deduct: ");
-            int quantity = scanner.nextInt();
-
-            // Check the current stock
-            String checkQuery = "SELECT qty_instock FROM product WHERE productID = ?";
-            try (PreparedStatement checkStmt = con.prepareStatement(checkQuery)) {
-                checkStmt.setInt(1, productID);
-                try (ResultSet rs = checkStmt.executeQuery()) {
-                    if (rs.next()) {
-                        int qtyInStock = rs.getInt("qty_instock");
-
-                        if (qtyInStock >= quantity) {
-                            // Update the inventory
-                            String updateQuery = "UPDATE product SET qty_instock = qty_instock - ? WHERE productID = ?";
-                            try (PreparedStatement updateStmt = con.prepareStatement(updateQuery)) {
-                                updateStmt.setInt(1, quantity);
-                                updateStmt.setInt(2, productID);
-
-                                int rowsAffected = updateStmt.executeUpdate();
-                                if (rowsAffected > 0) {
-                                    System.out.println("[!] Inventory updated successfully.");
-                                } else {
-                                    System.out.println("[!] Failed to update inventory. Product ID may not exist.");
-                                }
-                            }
-                        } else {
-                            System.out.println("[!] Insufficient stock. Available quantity: " + qtyInStock);
-                        }
-                    } else {
-                        System.out.println("[!] Product not found. Please check the Product ID.");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("[!] Error while updating inventory: " + e.getMessage());
-        }
-        scanner.nextLine(); // Clear scanner buffer
     }
 }

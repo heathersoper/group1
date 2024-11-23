@@ -39,7 +39,7 @@ public class OrderProcessingTransaction {
                     System.out.println("Returning to main menu...");
                     break;
                 default:
-                    System.out.println("[!] Invalid choice. Please enter a number between 0 and 5.");
+                    System.out.println("[!] Invalid choice. Please enter a number between 0 and 4.");
             }
         }
     }

@@ -43,7 +43,7 @@ public class PaymentTransaction {
                     System.out.println("Returning to Main Menu...");
                     break;
                 default:
-                    System.out.println("[!] Invalid choice. Please enter a number between 0 and 6.");
+                    System.out.println("[!] Invalid choice. Please enter a number between 0 and 5.");
             }
         }
     }
