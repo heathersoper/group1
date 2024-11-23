@@ -14,6 +14,7 @@ public class AnimoMarket {
                 System.out.println("4. Order Status");
                 System.out.println("5. View Records");
                 System.out.println("6. View Reports");
+                System.out.println("7. Delete Record(s)");
                 System.out.println("0. Exit");
                 System.out.print("Enter your choice: ");
 
@@ -45,6 +46,10 @@ public class AnimoMarket {
                     case 6:
                         System.out.println("View Reports selected.");
                         ViewReports.showMenu();
+                        break;
+                    case 7:
+                        System.out.println("Delete Record(s) selected.");
+                        DeleteRecords.showDeleteRecordsMenu();
                         break;
                     case 0:
                         exit = true;
