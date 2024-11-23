@@ -109,20 +109,39 @@ public class OrderStatusTransaction {
             System.out.print("Enter Quantity to Deduct: ");
             int quantity = scanner.nextInt();
 
-            String query = "UPDATE product SET qty_instock = qty_instock - ? WHERE productID = ?";
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setInt(1, quantity);
-            stmt.setInt(2, productID);
+            // Check the current stock
+            String checkQuery = "SELECT qty_instock FROM product WHERE productID = ?";
+            try (PreparedStatement checkStmt = con.prepareStatement(checkQuery)) {
+                checkStmt.setInt(1, productID);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) {
+                        int qtyInStock = rs.getInt("qty_instock");
 
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("[!] Inventory updated successfully.");
-            } else {
-                System.out.println("[!] Failed to update inventory. Product ID may not exist.");
+                        if (qtyInStock >= quantity) {
+                            // Update the inventory
+                            String updateQuery = "UPDATE product SET qty_instock = qty_instock - ? WHERE productID = ?";
+                            try (PreparedStatement updateStmt = con.prepareStatement(updateQuery)) {
+                                updateStmt.setInt(1, quantity);
+                                updateStmt.setInt(2, productID);
+
+                                int rowsAffected = updateStmt.executeUpdate();
+                                if (rowsAffected > 0) {
+                                    System.out.println("[!] Inventory updated successfully.");
+                                } else {
+                                    System.out.println("[!] Failed to update inventory. Product ID may not exist.");
+                                }
+                            }
+                        } else {
+                            System.out.println("[!] Insufficient stock. Available quantity: " + qtyInStock);
+                        }
+                    } else {
+                        System.out.println("[!] Product not found. Please check the Product ID.");
+                    }
+                }
             }
         } catch (SQLException e) {
             System.err.println("[!] Error while updating inventory: " + e.getMessage());
         }
-        scanner.nextLine();
+        scanner.nextLine(); // Clear scanner buffer
     }
 }

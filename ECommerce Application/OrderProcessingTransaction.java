@@ -13,7 +13,6 @@ public class OrderProcessingTransaction {
             System.out.println("2. Check Product Availability");
             System.out.println("3. Create New Order Record");
             System.out.println("4. Update Inventory");
-            System.out.println("5. Create Transaction Record");
             System.out.println("0. Return To Main Menu");
 
             int orderChoice = Input(scanner); // Get validated input
@@ -34,10 +33,6 @@ public class OrderProcessingTransaction {
                 case 4:
                     System.out.println("Updating inventory...");
                     OrderTransactionMenu.updateInventory(scanner);
-                    break;
-                case 5:
-                    System.out.println("Recording transaction...");
-                    OrderTransactionMenu.createTransactionRecord(scanner);
                     break;
                 case 0:
                     exitOrderProcessingMenu = true;
@@ -92,15 +87,15 @@ class OrderTransactionMenu {
                 // Check valid payment methods from past transactions
                 System.out.println("\nChecking customer's valid payment methods...");
                 String paymentMethodQuery = """
-                SELECT DISTINCT pm.method_name
-                FROM payment p
-                JOIN payment_method pm ON p.paymentmethodID = pm.paymentmethodID
-                WHERE p.paymentID IN (
-                    SELECT paymentID
-                    FROM orders
-                    WHERE customerID = ?
-                )
-            """;
+                            SELECT DISTINCT pm.method_name
+                            FROM payment p
+                            JOIN payment_method pm ON p.paymentmethodID = pm.paymentmethodID
+                            WHERE p.paymentID IN (
+                                SELECT paymentID
+                                FROM orders
+                                WHERE customerID = ?
+                            )
+                        """;
                 PreparedStatement paymentMethodStmt = con.prepareStatement(paymentMethodQuery);
                 paymentMethodStmt.setInt(1, customerID);
 
@@ -111,16 +106,17 @@ class OrderTransactionMenu {
                         System.out.println("- " + paymentMethodRS.getString("method_name"));
                     } while (paymentMethodRS.next());
                 } else {
-                    System.out.println("\nNo valid payment methods found for the customer in past transactions.");
+                    System.out.println("\nNo valid payment methods found. Customer does not have any transactions yet....");
                 }
             } else {
-                System.out.println("\nCustomer not found or not eligible to place an order.");
+                System.out.println("\nCustomer not found or not eligible to place an order. Customer ID not found... ");
             }
         } catch (SQLException e) {
             System.err.println("\n[!] Error while checking customer eligibility: " + e.getMessage());
         }
         scanner.nextLine(); // Consume newline
     }
+
 
     // Read product availability in inventory
     public static void readInventory(Scanner scanner) {
@@ -147,32 +143,104 @@ class OrderTransactionMenu {
     // Create a new order record
     public static void createOrder(Scanner scanner) {
         try (Connection con = DatabaseConnection.getConnection()) {
+            con.setAutoCommit(false); // Start transaction
+
             System.out.print("\nEnter customer ID: ");
             int customerID = scanner.nextInt();
+
+            // Check if customer exists
+            String checkCustomerQuery = "SELECT COUNT(*) AS count FROM customer WHERE customerID = ?";
+            PreparedStatement customerStmt = con.prepareStatement(checkCustomerQuery);
+            customerStmt.setInt(1, customerID);
+            ResultSet customerResult = customerStmt.executeQuery();
+
+            if (!customerResult.next() || customerResult.getInt("count") == 0) {
+                System.out.println("\n[!] Error: Customer ID not found. Please provide a valid ID.");
+                return; // Exit the method if customer ID is invalid
+            }
+
             System.out.print("Enter product ID: ");
             int productID = scanner.nextInt();
-            System.out.print("Enter total order amount: ");
-            double orderTotal = scanner.nextDouble();
+            System.out.print("Enter quantity ordered: ");
+            int orderQuantity = scanner.nextInt();
 
-            // Insert the order into the orders table
-            String query = "INSERT INTO orders (order_total, customerID, productID, order_date, order_status) VALUES (?, ?, ?, NOW(), 'Pending')";
-            PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setDouble(1, orderTotal);
-            stmt.setInt(2, customerID);
-            stmt.setInt(3, productID);
+            try {
+                // Check if product exists and has enough stock
+                String checkProductQuery = "SELECT price, qty_instock FROM product WHERE productID = ?";
+                PreparedStatement productStmt = con.prepareStatement(checkProductQuery);
+                productStmt.setInt(1, productID);
+                ResultSet productResult = productStmt.executeQuery();
 
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int orderID = generatedKeys.getInt(1);
-                    System.out.println("\nOrder created successfully with Order ID: " + orderID);
+                if (!productResult.next()) {
+                    System.out.println("\n[!] Error: Product ID not found. Please provide a valid ID.");
+                    con.rollback();
+                    return;
                 }
-            } else {
-                System.out.println("\nFailed to create the order.");
+
+                double productPrice = productResult.getDouble("price");
+                int stock = productResult.getInt("qty_instock");
+
+                if (stock < orderQuantity) {
+                    System.out.println("\n[!] Error: Insufficient stock. Available quantity: " + stock);
+                    con.rollback();
+                    return;
+                }
+
+                // Calculate total order amount
+                double orderTotal = productPrice * orderQuantity;
+
+                // Insert the order into the orders table
+                String orderQuery = "INSERT INTO orders (order_total, customerID, productID, order_date, order_status) VALUES (?, ?, ?, NOW(), 'Pending')";
+                PreparedStatement orderStmt = con.prepareStatement(orderQuery, Statement.RETURN_GENERATED_KEYS);
+                orderStmt.setDouble(1, orderTotal);
+                orderStmt.setInt(2, customerID);
+                orderStmt.setInt(3, productID);
+
+                int rowsAffected = orderStmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    ResultSet generatedKeys = orderStmt.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        int orderID = generatedKeys.getInt(1);
+
+                        // Insert into order_items table
+                        String orderItemsQuery = "INSERT INTO order_items (orderID, productID, order_quantity, item_total) VALUES (?, ?, ?, ?)";
+                        PreparedStatement orderItemsStmt = con.prepareStatement(orderItemsQuery);
+                        orderItemsStmt.setInt(1, orderID);
+                        orderItemsStmt.setInt(2, productID);
+                        orderItemsStmt.setInt(3, orderQuantity);
+                        orderItemsStmt.setDouble(4, orderTotal);
+
+                        rowsAffected = orderItemsStmt.executeUpdate();
+                        if (rowsAffected > 0) {
+                            // Update inventory (decrease stock)
+                            String updateInventoryQuery = "UPDATE product SET qty_instock = qty_instock - ? WHERE productID = ?";
+                            PreparedStatement inventoryStmt = con.prepareStatement(updateInventoryQuery);
+                            inventoryStmt.setInt(1, orderQuantity);
+                            inventoryStmt.setInt(2, productID);
+                            inventoryStmt.executeUpdate();
+
+                            con.commit(); // Commit transaction
+                            System.out.println("\nOrder created successfully with Order ID: " + orderID);
+                        } else {
+                            con.rollback(); // Rollback transaction
+                            System.out.println("\n[!] Error: Failed to create order items. Transaction rolled back.");
+                        }
+                    } else {
+                        con.rollback(); // Rollback transaction
+                        System.out.println("\n[!] Error: Failed to retrieve Order ID. Transaction rolled back.");
+                    }
+                } else {
+                    con.rollback(); // Rollback transaction
+                    System.out.println("\n[!] Error: Failed to create the order. Transaction rolled back.");
+                }
+            } catch (SQLException e) {
+                con.rollback(); // Rollback transaction
+                System.err.println("\n[!] Error during order creation: " + e.getMessage());
+            } finally {
+                con.setAutoCommit(true); // Restore default behavior
             }
         } catch (SQLException e) {
-            System.err.println("\n[!] Error while creating order: " + e.getMessage());
+            System.err.println("\n[!] Error connecting to database: " + e.getMessage());
         }
         scanner.nextLine();
     }
@@ -185,60 +253,36 @@ class OrderTransactionMenu {
             System.out.print("Enter quantity ordered: ");
             int quantityOrdered = scanner.nextInt();
 
-            // Update product inventory
-            String query = "UPDATE product SET qty_instock = qty_instock - ? WHERE productID = ?";
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setInt(1, quantityOrdered);
-            stmt.setInt(2, productID);
+            // Check available stock
+            String checkQuery = "SELECT qty_instock FROM product WHERE productID = ?";
+            PreparedStatement checkStmt = con.prepareStatement(checkQuery);
+            checkStmt.setInt(1, productID);
 
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("\nInventory updated successfully.");
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next()) {
+                int qtyInStock = rs.getInt("qty_instock");
+
+                if (qtyInStock >= quantityOrdered) {
+                    // Proceed with the update
+                    String updateQuery = "UPDATE product SET qty_instock = qty_instock - ? WHERE productID = ?";
+                    PreparedStatement updateStmt = con.prepareStatement(updateQuery);
+                    updateStmt.setInt(1, quantityOrdered);
+                    updateStmt.setInt(2, productID);
+
+                    int rowsAffected = updateStmt.executeUpdate();
+                    if (rowsAffected > 0) {
+                        System.out.println("\nInventory updated successfully.");
+                    } else {
+                        System.out.println("\nFailed to update inventory.");
+                    }
+                } else {
+                    System.out.println("\nInsufficient stock. Available quantity: " + qtyInStock);
+                }
             } else {
-                System.out.println("\nFailed to update inventory.");
+                System.out.println("\nProduct not found.");
             }
         } catch (SQLException e) {
             System.err.println("\n[!] Error while updating inventory: " + e.getMessage());
-        }
-        scanner.nextLine();
-    }
-
-    // Create a transaction record after a successful order
-    public static void createTransactionRecord(Scanner scanner) {
-        try (Connection con = DatabaseConnection.getConnection()) {
-            System.out.print("\nEnter order ID: ");
-            int orderID = scanner.nextInt();
-            System.out.print("Enter payment amount: ");
-            double amount = scanner.nextDouble();
-            System.out.print("Enter payment method ID: ");
-            int paymentMethodID = scanner.nextInt();
-
-            // Insert into the payment table
-            String query = "INSERT INTO payment (paymentmethodID, payment_date, amount) VALUES (?, NOW(), ?)";
-            PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, paymentMethodID);
-            stmt.setDouble(2, amount);
-
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int paymentID = generatedKeys.getInt(1);
-
-                    // Update order with paymentID
-                    String updateOrderQuery = "UPDATE orders SET paymentID = ? WHERE orderID = ?";
-                    PreparedStatement updateStmt = con.prepareStatement(updateOrderQuery);
-                    updateStmt.setInt(1, paymentID);
-                    updateStmt.setInt(2, orderID);
-
-                    updateStmt.executeUpdate();
-                    System.out.println("\nTransaction record created and order updated with payment.");
-                }
-            } else {
-                System.out.println("\nFailed to create the transaction record.");
-            }
-        } catch (SQLException e) {
-            System.err.println("\n[!] Error while creating transaction record: " + e.getMessage());
         }
         scanner.nextLine();
     }
