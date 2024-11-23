@@ -152,9 +152,9 @@ public class ViewReports {
 
     // Header for Revenue and Payment Method Report
     private static void printRevenueAndPaymentMethodReportHeader() {
-        System.out.println("\n--------------------------------------------------------------------------------------------------------------------");
+        System.out.println("\n----------------------------------------------------------------------------------------------------------------------------");
         System.out.printf("%-15s %-25s %-20s %-30s %-25s\n", "Order Date", "Total Revenue", "Payment Method", "Payment Method Usage Count", "Total Amount by Payment Method");
-        System.out.println("--------------------------------------------------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------------");
     }
 
     // Header for Customer Purchase History Report
