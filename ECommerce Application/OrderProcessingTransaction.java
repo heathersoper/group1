@@ -80,24 +80,46 @@ class OrderTransactionMenu {
             System.out.print("\nEnter customer ID: ");
             int customerID = scanner.nextInt();
 
-            // Query to check customer's account status and payment eligibility
-            String query = "SELECT * FROM customer WHERE customerID = ?";
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setInt(1, customerID);
+            // Query to check if the customer exists
+            String customerQuery = "SELECT * FROM customer WHERE customerID = ?";
+            PreparedStatement customerStmt = con.prepareStatement(customerQuery);
+            customerStmt.setInt(1, customerID);
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                System.out.println("\nCustomer found: " + rs.getString("first_name") + " " + rs.getString("last_name"));
-                // Check if the customer has a valid payment method
-                System.out.println("\nChecking valid payment method...");
-                // Assuming a valid payment method check should happen here (you can expand as needed)
+            ResultSet customerRS = customerStmt.executeQuery();
+            if (customerRS.next()) {
+                System.out.println("\nCustomer found: " + customerRS.getString("first_name") + " " + customerRS.getString("last_name"));
+
+                // Check valid payment methods from past transactions
+                System.out.println("\nChecking customer's valid payment methods...");
+                String paymentMethodQuery = """
+                SELECT DISTINCT pm.method_name
+                FROM payment p
+                JOIN payment_method pm ON p.paymentmethodID = pm.paymentmethodID
+                WHERE p.paymentID IN (
+                    SELECT paymentID
+                    FROM orders
+                    WHERE customerID = ?
+                )
+            """;
+                PreparedStatement paymentMethodStmt = con.prepareStatement(paymentMethodQuery);
+                paymentMethodStmt.setInt(1, customerID);
+
+                ResultSet paymentMethodRS = paymentMethodStmt.executeQuery();
+                if (paymentMethodRS.next()) {
+                    System.out.println("\nCustomer has used the following payment methods:");
+                    do {
+                        System.out.println("- " + paymentMethodRS.getString("method_name"));
+                    } while (paymentMethodRS.next());
+                } else {
+                    System.out.println("\nNo valid payment methods found for the customer in past transactions.");
+                }
             } else {
                 System.out.println("\nCustomer not found or not eligible to place an order.");
             }
         } catch (SQLException e) {
             System.err.println("\n[!] Error while checking customer eligibility: " + e.getMessage());
         }
-        scanner.nextLine();
+        scanner.nextLine(); // Consume newline
     }
 
     // Read product availability in inventory
